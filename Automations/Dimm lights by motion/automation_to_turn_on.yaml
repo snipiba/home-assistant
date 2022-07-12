@@ -1,0 +1,28 @@
+alias: Increase brightness to 50
+trigger:
+  - platform: state
+    entity_id:
+      - binary_sensor. ## add binary sensor as trigger
+    from: 'off'
+    to: 'on'
+condition:
+  - condition: state
+    entity_id: input_boolean.disable_dimming  ## binary helper switch, to disable funcionality when needed instead of turning off automation
+    state: 'off'
+  - condition: and
+    conditions:
+      - condition: state
+        entity_id: binary_sensor.noc ## helper (night) created from Time of day - from 22:00 to 4:00
+        state: 'on'
+  - condition: and  ## this condition is optional, but we change brightness only when light was previously turned on as well
+    conditions:
+      - condition: state
+        entity_id: light.  ## add light or light group to turn on
+        state: 'off'
+action:
+  - service: light.turn_on
+    data:
+      brightness_pct: 50
+    target:
+      entity_id: light. ## add light or light group to turn on
+mode: single
